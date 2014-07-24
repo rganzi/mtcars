@@ -1,12 +1,12 @@
 ---
-title: "Transmission Type and Fuel Economy in 'mtcars'"
+title: "Fuel Economy and Transmission Type in 'mtcars'"
 output:
   pdf_document:
     fig_height: 4
 ---
 
 ## Executive Summary
-A simple, two variable model of fuel economy generated from the mtcars data set produces remarkably good diagnostic results. However, the data appear to be ill-suited to determining whether transmission type has any influence on fuel economy. A more effective method for answering that question would be a pairwise comparison of the various car models, each with both transmissions.
+A simple, two variable model of fuel economy generated from the 'mtcars' data set produces remarkably good diagnostic results. However, the data appear to be ill-suited to determining whether transmission type has any influence on fuel economy. A more effective data set for answering that question would include pairwise comparisons of the various car models, each with both transmissions.
 
 ## Analysis
 ```{r libs, echo=FALSE}
@@ -26,7 +26,7 @@ mtcars$am <- gsub(0, "automatic", mtcars$am); mtcars$am <- gsub(1, "manual", mtc
 mtcars$am <- as.factor(mtcars$am)
 ```
 
-Weight (wt) is the variable most correlated with mpg, as shown in Table 1. So the exploratory analysis starts with a plot of these two variables.
+Weight (wt) is the variable most correlated with mpg, as shown in Table 1. So the exploratory analysis begins with a plot of these two variables.
 
 **Table 1. mtcars Correlations with mpg**  
 ```{r cormatrix, echo=FALSE}
