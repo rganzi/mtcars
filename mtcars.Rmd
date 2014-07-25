@@ -6,7 +6,7 @@ output:
 ---
 
 ## Executive Summary
-A simple, two variable model of fuel economy generated from the 'mtcars' data set produces remarkably good diagnostic results. However, the data appear to be ill-suited to determining whether transmission type has any influence on fuel economy. A more effective data set for answering that question would include pairwise comparisons of the various car models, each using both transmissions.
+A simple, two-variable model of fuel economy generated from the `mtcars` data set produces remarkably good diagnostic results. However, these data appear to be ill-suited to determining whether transmission type has any influence on fuel economy. A more effective data set for measuring that relationship would include pairwise comparisons of the various car models, each equipped with both transmissions.
 
 ## Analysis
 ```{r libs, echo=FALSE}
@@ -26,11 +26,11 @@ mtcars$am <- gsub(0, "automatic", mtcars$am); mtcars$am <- gsub(1, "manual", mtc
 mtcars$am <- as.factor(mtcars$am)
 ```
 
-The `mtcars` data set was extracted from the 1974 *Motor Trend* magazine and is comprised of fuel consumption and ten other aspects of car design and performance for 32 automobiles (1973-74 models). The selection of cars skews to imported (not-American), sports, and luxury cars. 
+The objective of this analysis is to measure the possible relationship between fuel economy and transmission type using the `mtcars` data set. `mtcars` was extracted from the 1974 *Motor Trend* magazine and is comprised of fuel consumption and ten other aspects of car design and performance for 32 automobiles (1973-74 models). The selection of cars skews to imported (not-American), sports, and luxury cars.
 
 Weight (`wt`) is the variable most correlated with `mpg`, as shown in Table 1. So the exploratory analysis begins with a plot of these two variables.
 
-**Table 1. `mtcars` (Abbrevieated) Correlations with mpg**  
+**Table 1. `mtcars` (abbrevieated) Correlations with `mpg`**  
 ```{r cormatrix, echo=FALSE}
 cor(mtcarscor$mpg, y = mtcarscor[, -c(1, 7)])
 ```
@@ -38,17 +38,17 @@ cor(mtcarscor$mpg, y = mtcarscor[, -c(1, 7)])
 The curved shape of the scatter in fig. 1 suggests that the variation of `mpg` with respect to `wt` is not linear. However, a transformation of the mpg variable to `gpm` (gallons of fuel consumed per 100 miles) appears to be linear with respect to weight (see Fig. 2) and is more likely to satisfy error assumptions since it is in-line with the original measurement -- fuel consumption over a 73-mile route (Henderson & Velleman, 397).
 
 ```{r gpm}
-#new gallons per mile variable
+# new gallons per mile variable
 mtcars$gpm <- 100 / mtcars$mpg
 ```
 
-There is very little overlap between the automatic and manual transmission cars with respect to weight, as described by Fig. 2. Nearly all the light cars have manual drive trains while the heavy cars use automatics. This lack of heterogeneity makes me skeptical of a model derived from this particular data set that uses the transmission variable.
+There is very little overlap between the automatic and manual transmission cars with respect to weight, as shown in Fig. 2. Nearly all the light cars have manual drive trains while the heavy cars use automatics. This lack of heterogeneity makes me skeptical of a model that uses the transmission type variable.
 
-Seeing the differentiation between the low-gpm Civic and Fiat 128 and the higher-gpm sports cars, it does appear that a measure of how under- or over-powered a car is would add description to the model. Henderson and Velleman choose `hp` divided by `wt`. The new hp/wt (`hpwt`) variable is not correlated with `wt`, so it is acceptable to add in the first model.
+The differentiation between the low-gpm Civic, Fiat 128, and Mercedes 230/240D and the higher-gpm sports cars, however, suggests that a measure of how under- or over-powered a car is would add descriptive value to the model. Henderson and Velleman choose `hp` divided by `wt`. The new hp/wt (`hpwt`) variable is not correlated with `wt`, so it is acceptable to add in the first model.
 
 ```{r hpwtvar}
 # hp per weight measure of over/under-poweredness
-mtcars$hpwt <- mtcars$hp/mtcars$wt
+mtcars$hpwt <- mtcars$hp / mtcars$wt
 cor(mtcars$hpwt, mtcars$wt)
 ```
 
@@ -66,21 +66,21 @@ vif(fit1)
 Model 2 is identical to Model 1 with the addition of the transmission variable `am`.
 
 ```{r fit2}
-# include a/m transmission variable
+# Model 2
 fit2 <- lm(gpm ~ hpwt + wt + am, mtcars)
 ```
 
-A complete summary of the model is provided in Table A-2. The transmission variable `am` is not statistically significant in Model 2. And a likelihood ratio test suggests that the `am` variable is not necessary, Pr>Chisq = 0.81 (> 0.05).
+A complete summary of Model 2 is provided in Table A-2. The transmission variable `am` is not statistically significant in the model. And a likelihood ratio test suggests that the `am` variable is not necessary, Pr>Chisq = 0.81 (> 0.05).
 
 ```{r lrtest, message=FALSE, echo=FALSE}
 library(lmtest)
 lrtest(fit1, fit2)
 ```
 
-A review of the diagnostic plots for Model 1 shows that the residuals are approximately normally-distributed (fig. 3) and that three American luxury cars have a high influence on the model fit according to their Cook's Distance (fig. 4).
+Similar tests of models that include the number of cylinders (`cyl`), v- or straight arrangement of the engine (`vs`), and the number of forward gears (`gear`) revealed that none of these variables improved on Model 1. A review of the diagnostic plots for Model 1 shows that the residuals are approximately normally-distributed with three outliers (fig. 3) and that three American luxury cars have a high influence on the model fit according to their Cook's Distance (fig. 4).
 
 ## Discussion
-A more effective method for measuring the possible influence of transmission type on fuel economy would be a pairwise comparison of the various car models, each with both transmissions. For example, the fuel consumption measures for a Toyota Corolla with a manual transmission could be compared with that of a Corolla with an automatic transmission.
+Model 1 is simple and remarkably descriptive but does not explain a possible effect of transmission type on `gpm`. The homogeneity of fuel economy with respect to transmission type in the `mtcars` data set does not support an analysis to either explore or quantify the relationship between fuel economy and transmission type. A more effective method for measuring that relationship would be a pairwise comparison of the various car models, each equipped with both transmissions. For example, the fuel consumption measures for a Toyota Corolla with a manual transmission could be compared to that of a Corolla equipped with an automatic transmission.
 
 ## References
 Henderson, Harold V. and Paul F. Velleman. ["Building Multiple Regression Models Interactively"]("http://www.jstor.org/stable/2530428") in *Biometrics*, Vol. 37, No. 2 (Jun., 1981), pp. 391-411.
@@ -93,8 +93,8 @@ Henderson, Harold V. and Paul F. Velleman. ["Building Multiple Regression Models
 ```{r mpgscatter, echo=FALSE}
 # mpg scatter with name labels
 t <- ggplot(data = mtcars, aes(x = wt, y = mpg, colour = am))
-t + geom_point(size = 2) +
-        geom_text(aes(label = rownames(mtcars)), hjust = 0, vjust = 1, size = 2.5, family = "mono") +
+t + geom_point(size = 1.5) +
+        geom_text(aes(label = rownames(mtcars)), hjust = 0, vjust = 1, size = 2, family = "mono") +
         coord_cartesian(xlim = c(1, 6.5), ylim = c(5, 40)) +
         xlab("Weight (Lbs/1,000)") + ylab("Miles per Gallon") +
         labs(colour = "Transmission") +
@@ -110,8 +110,8 @@ t + geom_point(size = 2) +
 ```{r gpmscatter, echo=FALSE}
 # gpm scatter with name labels
 p <- ggplot(data = mtcars, aes(x = wt, y = gpm, colour = am))
-p + geom_point(size = 2) +
-        geom_text(aes(label = rownames(mtcars)), hjust = 0, vjust = 1, size = 2.5, family = "mono") +
+p + geom_point(size = 1.5) +
+        geom_text(aes(label = rownames(mtcars)), hjust = 0, vjust = 1, size = 2, family = "mono") +
         coord_cartesian(xlim = c(1, 6.5), ylim = c(2, 10)) +
         xlab("Weight (Lbs/1,000)") + ylab("Gallons per 100 Miles") +
 #        ggtitle("Motor Trend Car Road Tests Data Set") + 

@@ -63,8 +63,27 @@ fit2 <- lm(gpm ~ hpwt + wt + am, mtcars)
 summary(fit2)
 vif(fit2)
 
+mtcars$gear <- as.factor(mtcars$gear)
+levels(mtcars$gear)
+
+# bad
+fit3 <- lm(gpm ~ hpwt + wt + gear, mtcars)
+summary(fit3)
+
+mtcars$cyl <- as.factor(mtcars$cyl)
+levels(mtcars$cyl)
+
+# a mess
+fit4 <- lm(gpm ~ hpwt + wt + cyl*as.factor(vs), mtcars)
+summary(fit4)
+
+# still bad
+fit5 <- lm(gpm ~ hpwt + wt + as.factor(vs), mtcars)
+summary(fit5)
+
+
 library(lmtest)
-lrtest(fit1, fit2)
+lrtest(fit1, fit5)
 
 names(mtcars)
 mtcars$hpdisp <- mtcars$hp / mtcars$disp
