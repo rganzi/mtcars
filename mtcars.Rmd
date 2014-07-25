@@ -30,12 +30,12 @@ The objective of this analysis is to measure the possible relationship between f
 
 Weight (`wt`) is the variable most correlated with `mpg`, as shown in Table 1. So the exploratory analysis begins with a plot of these two variables.
 
-**Table 1. `mtcars` (abbrevieated) Correlations with `mpg`**  
+**Table 1. `mtcars` (abbreviated) Correlations with `mpg`**  
 ```{r cormatrix, echo=FALSE}
 cor(mtcarscor$mpg, y = mtcarscor[, -c(1, 7)])
 ```
 
-The curved shape of the scatter in fig. 1 suggests that the variation of `mpg` with respect to `wt` is not linear. However, a transformation of the mpg variable to `gpm` (gallons of fuel consumed per 100 miles) appears to be linear with respect to weight (see Fig. 2) and is more likely to satisfy error assumptions since it is in-line with the original measurement -- fuel consumption over a 73-mile route (Henderson & Velleman, 397).
+The shape of the scatter in fig. 1 suggests that the variation of `mpg` with respect to `wt` is not linear. However, a transformation of the mpg variable to `gpm` (gallons of fuel consumed per 100 miles) appears to be linear with respect to weight (see Fig. 2) and is more likely to satisfy error assumptions since it is in-line with the original measurement -- fuel consumption over a 73-mile route (Henderson & Velleman, 397).
 
 ```{r gpm}
 # new gallons per mile variable
@@ -80,7 +80,7 @@ lrtest(fit1, fit2)
 Similar tests of models that include the number of cylinders (`cyl`), v- or straight arrangement of the engine (`vs`), and the number of forward gears (`gear`) revealed that none of these variables improved on Model 1. A review of the diagnostic plots for Model 1 shows that the residuals are approximately normally-distributed with three outliers (fig. 3) and that three American luxury cars have a high influence on the model fit according to their Cook's Distance (fig. 4).
 
 ## Discussion
-Model 1 is simple and remarkably descriptive but does not explain a possible effect of transmission type on `gpm`. The homogeneity of fuel economy with respect to transmission type in the `mtcars` data set does not support an analysis to either explore or quantify the relationship between fuel economy and transmission type. A more effective method for measuring that relationship would be a pairwise comparison of the various car models, each equipped with both transmissions. For example, the fuel consumption measures for a Toyota Corolla with a manual transmission could be compared to that of a Corolla equipped with an automatic transmission.
+Model 1 is simple and remarkably descriptive but does not explain a possible effect of transmission type on `gpm`. An effective method for measuring that relationship would be a pairwise comparison of the various car models, each equipped with both transmissions. For example, the fuel consumption measures for a Toyota Corolla with a manual transmission could be compared to that of a Corolla equipped with an automatic transmission. The homogeneity of fuel economy with respect to transmission type in the `mtcars` data set does not support an analysis to either explore or quantify the relationship between fuel economy and transmission type. 
 
 ## References
 Henderson, Harold V. and Paul F. Velleman. ["Building Multiple Regression Models Interactively"]("http://www.jstor.org/stable/2530428") in *Biometrics*, Vol. 37, No. 2 (Jun., 1981), pp. 391-411.
