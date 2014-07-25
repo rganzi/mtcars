@@ -63,6 +63,9 @@ fit2 <- lm(gpm ~ hpwt + wt + am, mtcars)
 summary(fit2)
 vif(fit2)
 
+library(lmtest)
+lrtest(fit1, fit2)
+
 names(mtcars)
 mtcars$hpdisp <- mtcars$hp / mtcars$disp
 

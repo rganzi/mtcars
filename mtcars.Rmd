@@ -1,12 +1,12 @@
 ---
-title: "Fuel Economy and Transmission Type in 'mtcars'"
+title: "Fuel Economy and Transmission Type in `mtcars`"
 output:
   pdf_document:
     fig_height: 4
 ---
 
 ## Executive Summary
-A simple, two variable model of fuel economy generated from the 'mtcars' data set produces remarkably good diagnostic results. However, the data appear to be ill-suited to determining whether transmission type has any influence on fuel economy. A more effective data set for answering that question would include pairwise comparisons of the various car models, each with both transmissions.
+A simple, two variable model of fuel economy generated from the 'mtcars' data set produces remarkably good diagnostic results. However, the data appear to be ill-suited to determining whether transmission type has any influence on fuel economy. A more effective data set for answering that question would include pairwise comparisons of the various car models, each using both transmissions.
 
 ## Analysis
 ```{r libs, echo=FALSE}
@@ -26,23 +26,25 @@ mtcars$am <- gsub(0, "automatic", mtcars$am); mtcars$am <- gsub(1, "manual", mtc
 mtcars$am <- as.factor(mtcars$am)
 ```
 
-Weight (wt) is the variable most correlated with mpg, as shown in Table 1. So the exploratory analysis begins with a plot of these two variables.
+The `mtcars` data set was extracted from the 1974 *Motor Trend* magazine and is comprised of fuel consumption and ten other aspects of car design and performance for 32 automobiles (1973-74 models). The selection of cars skews to imported (not-American), sports, and luxury cars. 
 
-**Table 1. mtcars Correlations with mpg**  
+Weight (`wt`) is the variable most correlated with `mpg`, as shown in Table 1. So the exploratory analysis begins with a plot of these two variables.
+
+**Table 1. `mtcars` (Abbrevieated) Correlations with mpg**  
 ```{r cormatrix, echo=FALSE}
-cor(mtcarscor$mpg, y = mtcarscor[, -1])
+cor(mtcarscor$mpg, y = mtcarscor[, -c(1, 7)])
 ```
 
-The curved shape of the scatter in fig. 1 suggests that the variation of mpg with respect to wt is not linear. However, a transformation of the mpg variable to gpm (gallons of fuel consumed per 100 miles) appears to be linear with respect to weight (see Fig. 2) and is more likely to satisfy error assumptions since it is in-line with the original measurement -- fuel consumption over a 73-mile route (Henderson & Vellemen, 397).
+The curved shape of the scatter in fig. 1 suggests that the variation of `mpg` with respect to `wt` is not linear. However, a transformation of the mpg variable to `gpm` (gallons of fuel consumed per 100 miles) appears to be linear with respect to weight (see Fig. 2) and is more likely to satisfy error assumptions since it is in-line with the original measurement -- fuel consumption over a 73-mile route (Henderson & Velleman, 397).
 
 ```{r gpm}
 #new gallons per mile variable
 mtcars$gpm <- 100 / mtcars$mpg
 ```
 
-There is very little overlap between the automatic and manual transmission cars with respect to weight, as described by Fig. 2. Nearly all the light cars have manual drivetrains while the heavy cars use automatics. This lack of heterogeneity makes me skeptical of a model derived from this particular data set that uses the transmission variable.
+There is very little overlap between the automatic and manual transmission cars with respect to weight, as described by Fig. 2. Nearly all the light cars have manual drive trains while the heavy cars use automatics. This lack of heterogeneity makes me skeptical of a model derived from this particular data set that uses the transmission variable.
 
-Seeing the differentiation between the low-gpm Civic and Fiat 128 and the higher-gpm sports cars, it does appear that a measure of how under- or over-powered a car is would add description to the model. Henderson and Velleman choose hp divided by wt. The new hp/wt (hpwt) variable is not correlated with wt, so it is acceptable to add in the first model.
+Seeing the differentiation between the low-gpm Civic and Fiat 128 and the higher-gpm sports cars, it does appear that a measure of how under- or over-powered a car is would add description to the model. Henderson and Velleman choose `hp` divided by `wt`. The new hp/wt (`hpwt`) variable is not correlated with `wt`, so it is acceptable to add in the first model.
 
 ```{r hpwtvar}
 # hp per weight measure of over/under-poweredness
@@ -54,37 +56,28 @@ cor(mtcars$hpwt, mtcars$wt)
 # Model 1
 fit1 <- lm(gpm ~ hpwt + wt, mtcars)
 ```
-\pagebreak[3]
-**Table 2. Model 1: Coefficients Summary**  
-```{r model1, echo=FALSE}
-summary(fit1)$coef
-```
 
-Both variables are statiscially significant at the 0.01 level (wt is significant at the 0.001 level) gpm increases 1.47 gallons with every increase in wt of 1 (1000 lbs). The coefficient of hp/wt is 0.023997. The Adjusted R-squared value for Model 1 is 0.8379. VIFs are near 1:
+A complete summary of the model is provided in Table A-1. `hpwt` is statistically significant at the 0.01 level. `wt` is significant at the 0.001 level. `gpm` increases 1.47 gallons with an increase in `wt` of 1 (1,000 lbs). The Adjusted R-squared value for Model 1 is 0.8379. VIFs are near 1:
 
-```{r viffit1, echo=FALSE}
+```{r viffit1}
 vif(fit1)
 ```
 
-Model 2 is identical to Model 1 with the addition of the transmission variable (am).
+Model 2 is identical to Model 1 with the addition of the transmission variable `am`.
 
 ```{r fit2}
 # include a/m transmission variable
 fit2 <- lm(gpm ~ hpwt + wt + am, mtcars)
 ```
 
-**Table 3. Model 2: Coefficients Summary**  
-```{r model2, echo=FALSE}
-summary(fit2)$coef
+A complete summary of the model is provided in Table A-2. The transmission variable `am` is not statistically significant in Model 2. And a likelihood ratio test suggests that the `am` variable is not necessary, Pr>Chisq = 0.81 (> 0.05).
+
+```{r lrtest, message=FALSE, echo=FALSE}
+library(lmtest)
+lrtest(fit1, fit2)
 ```
 
-The transmission variable (am) is not statistically significant in Model 2 and does not add descriptive value to the model -- the R-squared value, adjusted for degrees of freedom, is 0.8324. The addition of the a/m variable substantially raises the VIFs:
-
-```{r viffit2, echo=FALSE}
-vif(fit2)
-```
-
-A review of the diagnostic plots for Model 1 (figs. 3-6) shows that the residuals are approximately normally-distributed and that three American luxury cars have a high influence on the model.
+A review of the diagnostic plots for Model 1 shows that the residuals are approximately normally-distributed (fig. 3) and that three American luxury cars have a high influence on the model fit according to their Cook's Distance (fig. 4).
 
 ## Discussion
 A more effective method for measuring the possible influence of transmission type on fuel economy would be a pairwise comparison of the various car models, each with both transmissions. For example, the fuel consumption measures for a Toyota Corolla with a manual transmission could be compared with that of a Corolla with an automatic transmission.
@@ -129,8 +122,17 @@ p + geom_point(size = 2) +
 
 \pagebreak[4]
 
+**Table A-1. Model 1 Summary**  
+```{r model1, echo=FALSE}
+summary(fit1)
+```
+
+**Table A-2. Model 2 Summary**  
+```{r model2, echo=FALSE}
+summary(fit2)
+```
+\pagebreak[4]
 **Fig. 3. Model 1: Residuals vs. Fitted Values**  
-\linebreak[4]
 \linebreak[4]
 ```{r diagplot1, echo=FALSE}
 # diagnostic plots, which = 1:4
@@ -141,32 +143,9 @@ plot(fit1, which = 1)
 \linebreak[4]
 \linebreak[4]
 \linebreak[4]
-**Fig. 4. Model 1: Normal Q-Q**  
+**Fig. 4. Model 1: Cook's Distance**  
 \linebreak[4]
-\linebreak[4]
-```{r diagplot2, echo=FALSE}
-# diagnostic plots, which = 1:4
-par(family = "mono", ps = 10)
-plot(fit1, which = 2)
-```
 
-\pagebreak[4]
-
-**Fig. 5. Model 1: Scale-Location**  
-\linebreak[4]  
-\linebreak[4]  
-```{r diagplot3, echo=FALSE}
-# diagnostic plots, which = 1:4
-par(family = "mono", ps = 10)
-plot(fit1, which = 3)
-```
-\linebreak[4]  
-\linebreak[4]
-\linebreak[4]
-\linebreak[4]
-**Fig. 6. Model 1: Cook's Distance**  
-\linebreak[4]  
-\linebreak[4]  
 ```{r diagplot4, echo=FALSE}
 # diagnostic plots, which = 1:4
 par(family = "mono", ps = 10)
